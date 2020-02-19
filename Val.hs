@@ -24,8 +24,7 @@ strToVal s = case readMaybe s :: Maybe Int of
 
 -- if it's already a val, just extract the float
 toFloat :: Val -> Float
--- If it's an int, turn it innto a float
+-- If it's an int, turn it into a float
 toFloat (Real x) = x
 toFloat (Integer i) = fromIntegral i     
 toFloat (Id _) = error "Not convertible to float"
-
