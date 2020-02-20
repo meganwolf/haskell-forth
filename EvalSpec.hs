@@ -75,11 +75,6 @@ main = hspec $ do
             evaluate(eval "^" []) `shouldThrow` errorCall "Stack underflow"
             evaluate(eval "^" [Integer 2]) `shouldThrow` errorCall "Stack underflow"
 
-    
-        
-
-
-
         -- this does not work, seems to be a HSpec bug
         -- it "errors on non-numeric inputs" $ do
         --    evaluate(eval "*" [Real 3.0, Id "x"]) `shouldThrow` anyException
@@ -92,6 +87,44 @@ main = hspec $ do
 
         it "errors on empty stack" $ do
             evaluate (eval "DUP" []) `shouldThrow` errorCall "Stack underflow"
+
+    context "STR" $ do
+        it "converts the argument into a string" $ do
+            eval "STR" [Integer 2] `shouldBe` [Id "2"]
+            eval "STR" [Real 2.0] `shouldBe` [Id "2.0"]
+
+        it "errors on empty stack" $ do
+            evaluate (eval "STR" []) `shouldThrow` errorCall "Stack underflow"
+
+    context "CONCAT2" $ do
+        it "concatenates 2 strings from the stack" $ do
+            eval "CONCAT2" [Id "Hello", Id " World!"] `shouldBe` [Id "Hello World!"]
+        
+        it "errors on too few arguments" $ do
+            evaluate (eval "CONCAT2" [Id "Hello"]) `shouldThrow` errorCall "Stack underflow"
+            evaluate (eval "CONCAT2" []) `shouldThrow` errorCall "Stack underflow"
+
+        it "errors on arguments not Strings" $ do
+            evaluate (eval "CONCAT2" [Id "Hello", Integer 5]) `shouldThrow` errorCall "Arguments are not strings"
+            evaluate (eval "CONCAT2" [Integer 5, Id "Hello"]) `shouldThrow` errorCall "Arguments are not strings"
+            evaluate (eval "CONCAT2" [Id "Hello", Real 5]) `shouldThrow` errorCall "Arguments are not strings"
+            evaluate (eval "CONCAT2" [Real 5.0, Id "Hello"]) `shouldThrow` errorCall "Arguments are not strings"
+            evaluate (eval "CONCAT2" [Real 5.0, Integer 5]) `shouldThrow` errorCall "Arguments are not strings"
+
+    context "CONCAT3" $ do
+        it "concatenates 3 strings from the stack" $ do
+            eval "CONCAT3" [Id "Hi, ", Id "Welcome to ", Id "Chilli's"] `shouldBe` [Id "Hi, Welcome to Chilli's"]
+
+        it "errors on too few arguments" $ do
+            evaluate (eval "CONCAT3" [Id "Hello"]) `shouldThrow` errorCall "Stack underflow"
+            evaluate (eval "CONCAT3" [Id "Hello", Id " World"]) `shouldThrow` errorCall "Stack underflow"
+            evaluate (eval "CONCAT3" []) `shouldThrow` errorCall "Stack underflow"
+
+        it "errors on arguments not Strings" $ do
+            evaluate (eval "CONCAT3" [Integer 5,  Integer 6, Id "Chilli's"]) `shouldThrow` errorCall "Arguments are not strings"
+            evaluate (eval "CONCAT3" [Integer 5,  Id "Welcome to ", Id "Chilli's"]) `shouldThrow` errorCall "Arguments are not strings"
+            evaluate (eval "CONCAT3" [Real 5.0, Real 5.0, Real 5.0]) `shouldThrow` errorCall "Arguments are not strings"
+
 
   describe "evalOut" $ do
     context "." $ do
@@ -106,6 +139,10 @@ main = hspec $ do
         it "eval pass-through" $ do
             evalOut "*" ([Real 2.0, Integer 2], "blah") `shouldBe` ([Real 4.0], "blah") 
 
+    context "CR" $ do
+        it "prints a new line (for nice formating)" $ do
+            evalOut "CR" ([],"") `shouldBe` ([],"\n")
+
     context "EMIT" $ do
         it "converts Integer value to ASCII Char value" $ do
             evalOut "EMIT" ([Integer 80],"") `shouldBe` ([],"P")
@@ -113,5 +150,7 @@ main = hspec $ do
         
         it "EMIT errors on empty stack" $ do
             evaluate (evalOut "EMIT" ([], "")) `shouldThrow` errorCall "Stack underflow"
+
+
 
     

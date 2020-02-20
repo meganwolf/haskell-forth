@@ -16,8 +16,6 @@ eval "*" (x:y:tl) = (Real $ toFloat x * toFloat y) : tl
 -- any remaining cases are stacks too short
 eval "*" _ = error("Stack underflow")
 
--- Write added code here
-
 -- Addition
 -- if arguments are integers, keep result as integer
 eval "+" (Integer x: Integer y:tl) = Integer (x+y) : tl
@@ -49,12 +47,58 @@ eval "^" (Integer x: Integer y:tl) = Integer (x^y) : tl
 eval "^" (x:y:tl) = (Real $ toFloat x ** toFloat y) : tl
 -- any remaining cases are stacks too short
 eval "^" _ = error("Stack underflow")
-  
-
 
 -- Duplicate the element at the top of the stack
 eval "DUP" (x:tl) = (x:x:tl)
 eval "DUP" [] = error("Stack underflow")
+
+-- `STR`: converts the argument into a string (needs to work for all types)
+eval "STR" (Integer x:tl) = (Id (show x):tl)
+eval "STR" (Real x:tl) = (Id (show x):tl)
+eval "STR" [] = error("Stack underflow")
+
+-- `CONCAT2` and `CONCAT3` concatenates 2 or 3 strings from the stack 
+eval "CONCAT2" (Id x : Id y: tl) = Id (x ++ y):tl
+-- (errors if arguments not strings)
+eval "CONCAT2" (Id x : Integer y: tl) = error("Arguments are not strings")
+eval "CONCAT2" (Integer x : Id y: tl) = error("Arguments are not strings")
+eval "CONCAT2" (Id x : Real y: tl) = error("Arguments are not strings")
+eval "CONCAT2" (Real x : Id y : tl) = error("Arguments are not strings")
+eval "CONCAT2" (Real x : Real y : tl) = error("Arguments are not strings")
+eval "CONCAT2" (Integer x : Integer y : tl) = error("Arguments are not strings")
+eval "CONCAT2" (Real x : Integer y : tl) = error("Arguments are not strings")
+eval "CONCAT2" (Integer x : Real y : tl) = error("Arguments are not strings")
+-- any remaining cases are stacks too short
+eval "CONCAT2" _ = error("Stack underflow")
+
+eval "CONCAT3" (Id x : Id y : Id z : tl) = Id (x ++ y ++ z):tl
+-- errors if arguments not strings
+eval "CONCAT3" (Integer x : Id y : Id z: tl) = error("Arguments are not strings")
+eval "CONCAT3" (Id x : Integer y : Id z: tl) = error("Arguments are not strings")
+eval "CONCAT3" (Id x : Id y : Integer z: tl) = error("Arguments are not strings")
+eval "CONCAT3" (Integer x : Integer y : Id z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Integer x : Id y : Integer z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Id x : Integer y : Integer z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Real x : Id y : Id z: tl) = error("Arguments are not strings")
+eval "CONCAT3" (Id x : Real y : Id z: tl) = error("Arguments are not strings")
+eval "CONCAT3" (Id x : Id y :Real z: tl) = error("Arguments are not strings")
+eval "CONCAT3" (Real x : Real y : Id z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Real x : Id y : Real z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Id x : Real y : Real z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Integer x : Real y : Id z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Real x : Integer y : Id z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Integer x : Id y : Real z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Real x : Id y :Integer z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Id x : Integer y : Real z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Real x : Real y : Real z : tl) = error("Arguments are not strings")
+eval "CONCAT3" (Integer x :Integer y : Integer z : tl) = error("Arguments are not strings")
+
+--eval "CONCAT3" (Integer x : Id y: tl) = error("Arguments are not strings")
+--eval "CONCAT3" (Id x : Real y: tl) = error("Arguments are not strings")
+--eval "CONCAT3" (Real x : Id y : tl) = error("Arguments are not strings")
+
+-- any remaining cases are stacks too short
+eval "CONCAT3" _ = error("Stack underflow")
 
 -- this must be the last rule
 -- it assumes that no match is made and preserves the string as argument
@@ -75,11 +119,7 @@ evalOut "EMIT" (Integer i:tl, out) = (tl, out ++ [toEnum i])
 evalOut "EMIT" ([], _) = error "Stack underflow"
 
 -- `CR`: prints a new line (for nice formating)
-
--- `STR`: converts the argument into a string (needs to work for all types)
-
--- `CONCAT2` and `CONCAT3` concatenates 2 or 3 strings from the stack (errors if arguments not strings)
-
+evalOut "CR" ([], out) = ([], out ++ ("\n"))
 
 -- this has to be the last case
 -- if no special case, ask eval to deal with it and propagate output
