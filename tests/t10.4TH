@@ -1,0 +1,6 @@
+2 DUP * .
+10 DUP * CR .
+10 STR DUP DUP CONCAT3 CR .
+420 DUP - CR .
+1337 DUP / 580 500 - * CR . 
+5 DUP 3 - ^ CR .
