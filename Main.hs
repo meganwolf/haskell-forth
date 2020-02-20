@@ -4,6 +4,7 @@ module Main where
 
 import Interpret
 import System.Environment
+import Control.Monad (unless)
 
 main :: IO ()
 main = do
@@ -16,7 +17,10 @@ main = do
     -- Change the code in `Main.hs` so that, if the stack is not empty at the end of execution, 
     -- a message gets printed on the screen saying so and the stack content gets printed. 
     -- Make sure at least one of your test cases covers this situation.
-    --if stack /= [] then putStrLn stack else 
+    -- if null stack then doputStrLn $ stack else return ()
+    unless (null stack) $ do 
+        putStrLn $ show("Stack not empty")
+        putStrLn $ show stack
 
      
         

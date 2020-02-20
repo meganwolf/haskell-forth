@@ -38,12 +38,12 @@ main = hspec $ do
 
     context "-" $ do
         it "subtracts integers" $ do
-            eval "-" [Integer 5, Integer 3] `shouldBe` [Integer 2]
+            eval "-" [Integer 3, Integer 5] `shouldBe` [Integer 2]
 
         it "subtracts floats" $ do
-            eval "-" [Integer 12, Real 7.0] `shouldBe` [Real 5.0]
-            eval "-" [Real 15.0, Integer 2] `shouldBe` [Real 13.0]
-            eval "-" [Real 20.0, Real 10.0] `shouldBe` [Real 10.0]
+            eval "-" [Real 7.0, Integer 12] `shouldBe` [Real 5.0]
+            eval "-" [Integer 2, Real 15.0] `shouldBe` [Real 13.0]
+            eval "-" [Real 10.0, Real 20.0] `shouldBe` [Real 10.0]
 
         it "subtract errors on too few arguments" $ do
             evaluate(eval "-" []) `shouldThrow` errorCall "Stack underflow"
@@ -51,12 +51,12 @@ main = hspec $ do
 
     context "/" $ do
         it "divides integers" $ do
-            eval "/" [Integer 92, Integer 10] `shouldBe` [Integer 9]
+            eval "/" [Integer 10, Integer 92] `shouldBe` [Integer 9]
 
         it "divides floats" $ do
-            eval "/" [Integer 12, Real 6.0] `shouldBe` [Real 2.0]
-            eval "/" [Real 100.0, Integer 5] `shouldBe` [Real 20.0]
-            eval "/" [Real 25.0, Real 5.0] `shouldBe` [Real 5.0]
+            eval "/" [Real 6.0, Integer 12] `shouldBe` [Real 2.0]
+            eval "/" [Integer 5, Real 100.0] `shouldBe` [Real 20.0]
+            eval "/" [Real 5.0, Real 25.0] `shouldBe` [Real 5.0]
 
         it "divide errors on too few argumennts" $ do
             evaluate(eval "/" []) `shouldThrow` errorCall "Stack underflow"
@@ -64,12 +64,12 @@ main = hspec $ do
     
     context "^" $ do
         it "powers integers" $ do
-            eval "^" [Integer 2, Integer 3] `shouldBe` [Integer 8]
+            eval "^" [Integer 3, Integer 2] `shouldBe` [Integer 8]
 
         it "powers floats" $ do
-            eval "^" [Integer 5, Real 7.0] `shouldBe` [Real 78125.0]
-            eval "^" [Real 7.0, Integer 5] `shouldBe` [Real 16807.0]
-            eval "^" [Real 5.0, Real 3.0] `shouldBe` [Real 125.0]
+            eval "^" [Real 7.0, Integer 5] `shouldBe` [Real 78125.0]
+            eval "^" [Integer 5, Real 7.0] `shouldBe` [Real 16807.0]
+            eval "^" [Real 3.0, Real 5.0] `shouldBe` [Real 125.0]
         
         it "power errors on too few arguments" $ do
             evaluate(eval "^" []) `shouldThrow` errorCall "Stack underflow"
@@ -98,7 +98,7 @@ main = hspec $ do
 
     context "CONCAT2" $ do
         it "concatenates 2 strings from the stack" $ do
-            eval "CONCAT2" [Id "Hello", Id " World!"] `shouldBe` [Id "Hello World!"]
+            eval "CONCAT2" [Id " World!", Id "Hello"] `shouldBe` [Id "Hello World!"]
         
         it "errors on too few arguments" $ do
             evaluate (eval "CONCAT2" [Id "Hello"]) `shouldThrow` errorCall "Stack underflow"
@@ -113,7 +113,7 @@ main = hspec $ do
 
     context "CONCAT3" $ do
         it "concatenates 3 strings from the stack" $ do
-            eval "CONCAT3" [Id "Hi, ", Id "Welcome to ", Id "Chilli's"] `shouldBe` [Id "Hi, Welcome to Chilli's"]
+            eval "CONCAT3" [Id "Chilli's", Id "Welcome to ", Id "Hi, "] `shouldBe` [Id "Hi, Welcome to Chilli's"]
 
         it "errors on too few arguments" $ do
             evaluate (eval "CONCAT3" [Id "Hello"]) `shouldThrow` errorCall "Stack underflow"
@@ -141,7 +141,7 @@ main = hspec $ do
 
     context "CR" $ do
         it "prints a new line (for nice formating)" $ do
-            evalOut "CR" ([],"") `shouldBe` ([],"\n")
+            evalOut "CR" ([Id "CR"],"") `shouldBe` ([Id "CR"],"\n")
 
     context "EMIT" $ do
         it "converts Integer value to ASCII Char value" $ do

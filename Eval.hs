@@ -55,6 +55,7 @@ eval "DUP" [] = error("Stack underflow")
 -- `STR`: converts the argument into a string (needs to work for all types)
 eval "STR" (Integer x:tl) = (Id (show x):tl)
 eval "STR" (Real x:tl) = (Id (show x):tl)
+eval "STR" (Id x:tl) = (Id x:tl)
 eval "STR" [] = error("Stack underflow")
 
 -- `CONCAT2` and `CONCAT3` concatenates 2 or 3 strings from the stack 
