@@ -42,9 +42,9 @@ eval "/" _ = error("Stack underflow")
 
 -- Power
 -- if arguments are integers, keep result as integer
-eval "^" (Integer x: Integer y:tl) = Integer (x^y) : tl
+eval "^" (Integer x: Integer y:tl) = Integer (y^x) : tl
 -- if any argument is a float, make result a float
-eval "^" (x:y:tl) = (Real $ toFloat x ** toFloat y) : tl
+eval "^" (x:y:tl) = (Real $ toFloat y ** toFloat x) : tl
 -- any remaining cases are stacks too short
 eval "^" _ = error("Stack underflow")
 
@@ -58,7 +58,7 @@ eval "STR" (Real x:tl) = (Id (show x):tl)
 eval "STR" [] = error("Stack underflow")
 
 -- `CONCAT2` and `CONCAT3` concatenates 2 or 3 strings from the stack 
-eval "CONCAT2" (Id x : Id y: tl) = Id (x ++ y):tl
+eval "CONCAT2" (Id x : Id y: tl) = Id (y ++ x):tl
 -- (errors if arguments not strings)
 eval "CONCAT2" (Id x : Integer y: tl) = error("Arguments are not strings")
 eval "CONCAT2" (Integer x : Id y: tl) = error("Arguments are not strings")
@@ -71,7 +71,7 @@ eval "CONCAT2" (Integer x : Real y : tl) = error("Arguments are not strings")
 -- any remaining cases are stacks too short
 eval "CONCAT2" _ = error("Stack underflow")
 
-eval "CONCAT3" (Id x : Id y : Id z : tl) = Id (x ++ y ++ z):tl
+eval "CONCAT3" (Id x : Id y : Id z : tl) = Id (z ++ y ++ x):tl
 -- errors if arguments not strings
 eval "CONCAT3" (Integer x : Id y : Id z: tl) = error("Arguments are not strings")
 eval "CONCAT3" (Id x : Integer y : Id z: tl) = error("Arguments are not strings")
@@ -121,6 +121,7 @@ evalOut "EMIT" ([], _) = error "Stack underflow"
 -- `CR`: prints a new line (for nice formating)
 evalOut "CR" (Integer i:tl, out) = (Integer i:tl, out ++ ("\n"))
 evalOut "CR" (Real x: tl, out) = (Real x:tl, out ++ ("\n"))
+evalOut "CR" (Id x: tl, out) = (Id x:tl, out ++ ("\n"))
 
 -- this has to be the last case
 -- if no special case, ask eval to deal with it and propagate output
