@@ -26,17 +26,17 @@ eval "+" _ = error("Stack underflow")
 
 -- Subtraction
 -- if arguments are integers, keep result as integer
-eval "-" (Integer x: Integer y:tl) = Integer (x-y) : tl
+eval "-" (Integer x: Integer y:tl) = Integer (y-x) : tl
 -- if any argument is a float, make result a float
-eval "-" (x:y:tl) = (Real $ toFloat x - toFloat y) : tl
+eval "-" (x:y:tl) = (Real $ toFloat y - toFloat x) : tl
 -- any remaining cases are stacks too short
 eval "-" _ = error("Stack underflow")
 
 -- Division
 -- if arguments are integers, keep result as integer
-eval "/" (Integer x: Integer y:tl) = Integer (div x y) : tl
+eval "/" (Integer x: Integer y:tl) = Integer (div y x) : tl
 -- if any argument is a float, make result a float
-eval "/" (x:y:tl) = (Real $ toFloat x / toFloat y) : tl
+eval "/" (x:y:tl) = (Real $ toFloat y / toFloat x) : tl
 -- any remaining cases are stacks too short
 eval "/" _ = error("Stack underflow")
 
@@ -119,7 +119,8 @@ evalOut "EMIT" (Integer i:tl, out) = (tl, out ++ [toEnum i])
 evalOut "EMIT" ([], _) = error "Stack underflow"
 
 -- `CR`: prints a new line (for nice formating)
-evalOut "CR" ([], out) = ([], out ++ ("\n"))
+evalOut "CR" (Integer i:tl, out) = (Integer i:tl, out ++ ("\n"))
+evalOut "CR" (Real x: tl, out) = (Real x:tl, out ++ ("\n"))
 
 -- this has to be the last case
 -- if no special case, ask eval to deal with it and propagate output
